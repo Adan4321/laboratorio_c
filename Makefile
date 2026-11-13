@@ -1,8 +1,17 @@
 CC = gcc
 CFLAGS ?= -std=c11 -Wall -Wextra -Wpedantic -O2
 LDLIBS ?= -lm
-TARGET = simulador_artemis
 OBJETOS = main.o artemis.o validaciones.o
+
+ifeq ($(OS),Windows_NT)
+TARGET = simulador_artemis.exe
+RUN = ejecutar.bat
+CLEAN = limpiar.bat
+else
+TARGET = simulador_artemis
+RUN = ./$(TARGET)
+CLEAN = rm -f $(OBJETOS) $(TARGET)
+endif
 
 all: $(TARGET)
 
@@ -19,9 +28,9 @@ validaciones.o: validaciones.c validaciones.h
 	$(CC) $(CFLAGS) -c validaciones.c
 
 run: $(TARGET)
-	./$(TARGET)
+	$(RUN)
 
 clean:
-	rm -f $(OBJETOS) $(TARGET)
+	$(CLEAN)
 
 .PHONY: all run clean

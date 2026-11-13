@@ -85,6 +85,11 @@ Para `h = 192 km` y `m = 33.000 kg`:
 | `artemis.c` | Fisica LEO, calculos, simulacion por turnos, reporte y bitacora |
 | `validaciones.h` | Prototipos de las funciones de entrada segura |
 | `validaciones.c` | Lectura validada de enteros, doubles y confirmaciones `s/n` |
+| `Makefile` | Compilacion multiplataforma (Linux/macOS/Windows) |
+| `compilar.bat` | Compilacion en Windows sin depender de `make` |
+| `ejecutar.bat` | Ejecucion en Windows |
+| `limpiar.bat` | Limpieza de objetos y ejecutable en Windows |
+| `compilar_y_ejecutar.bat` | Compilacion y ejecucion en un solo paso en Windows |
 
 ```mermaid
 flowchart TD
@@ -106,7 +111,20 @@ flowchart TD
 
 ## 5. Compilacion y ejecucion
 
-### Con Makefile (recomendado)
+### Requisitos
+
+- **Linux/macOS:** `gcc` y, opcionalmente, `make`.
+- **Windows:** MinGW-w64 con `gcc` agregado al `PATH`. `make` es opcional porque se incluyen scripts `.bat`.
+
+Verificar que el compilador este disponible:
+
+```bash
+gcc --version
+```
+
+### Linux / macOS
+
+Con Makefile:
 
 ```bash
 make
@@ -125,27 +143,66 @@ Para limpiar los archivos generados:
 make clean
 ```
 
-### Compilacion directa con GCC
+Compilacion directa:
 
 ```bash
 gcc -std=c11 -Wall -Wextra -Wpedantic main.c artemis.c validaciones.c -o simulador_artemis -lm
 ./simulador_artemis
 ```
 
-En Windows con MinGW:
+### Windows
 
-```bash
+El codigo detecta Windows automaticamente y habilita la consola UTF-8. El Makefile tambien detecta Windows y genera `simulador_artemis.exe`.
+
+#### Opcion A: scripts incluidos (recomendada)
+
+```bat
+compilar.bat
+ejecutar.bat
+```
+
+Para compilar y ejecutar en un solo paso:
+
+```bat
+compilar_y_ejecutar.bat
+```
+
+Para limpiar los archivos generados:
+
+```bat
+limpiar.bat
+```
+
+#### Opcion B: con Make para Windows
+
+Si tiene `mingw32-make` o `make` disponible:
+
+```bat
+mingw32-make
+mingw32-make run
+mingw32-make clean
+```
+
+#### Opcion C: compilacion directa con MinGW
+
+```bat
 gcc -std=c11 -Wall -Wextra -Wpedantic main.c artemis.c validaciones.c -o simulador_artemis.exe -lm
 simulador_artemis.exe
 ```
 
 ### Tarea de VS Code
 
-El archivo `.vscode/tasks.json` incluye las tareas:
+El archivo `.vscode/tasks.json` adapta las tareas segun el sistema operativo:
 
-- **Compilar simulador Artemis** (ejecuta `make`).
-- **Ejecutar simulador Artemis**.
-- **Limpiar compilacion**.
+- **Linux/macOS:** ejecuta `make`, `./simulador_artemis` y `make clean`.
+- **Windows:** ejecuta `compilar.bat`, `ejecutar.bat` y `limpiar.bat` mediante `cmd`.
+
+### Portabilidad
+
+- El codigo fuente es C11 portable y no usa APIs exclusivas de un sistema operativo.
+- `windows.h` y `SetConsoleOutputCP(CP_UTF8)` se incluyen solo cuando se compila en Windows (`_WIN32`).
+- Las lecturas numericas aceptan coma o punto decimal sin depender del locale del sistema.
+- Los archivos `.bat` se entregan con terminaciones de linea CRLF para Windows.
 
 ## 6. Menu del programa
 
@@ -184,13 +241,14 @@ El archivo `.vscode/tasks.json` incluye las tareas:
 
 | Herramienta | Modelo | Tareas realizadas |
 |---|---|---|
-| opencode | `deepseek-v4.1-flash-free` | Analisis del repositorio, correccion de errores de compilacion, diseno modular, implementacion de la fisica del Problema 2, validaciones, reporte, Makefile y documentacion |
+| opencode | `deepseek-v4.1-flash-free` | Analisis del repositorio, correccion de errores de compilacion, diseno modular, implementacion de la fisica del Problema 2, validaciones, reporte, Makefile, scripts de Windows y documentacion |
 
 ### Prompts o consultas representativas
 
 1. "Vamos a trabajar con este repo https://github.com/Adan4321/laboratorio_c.git"
 2. "Verifica que cumple con los requisitos" (contrastando el proyecto con la consigna del TPI).
 3. "Ok ahora si, haz todo eso que dijimos" (implementacion de los modulos pendientes).
+4. "Dejalo full preparado para Windows" (Makefile condicional, scripts `.bat` y tareas de VS Code por sistema operativo).
 
 ### Como se valido y adapto el codigo generado
 
@@ -206,6 +264,6 @@ El archivo `.vscode/tasks.json` incluye las tareas:
 ## 9. Entregables
 
 - Codigo fuente modularizado: `main.c`, `artemis.c`, `artemis.h`, `validaciones.c`, `validaciones.h`.
-- `Makefile` y tareas de compilacion de VS Code.
+- `Makefile`, scripts `.bat` para Windows y tareas de compilacion de VS Code.
 - `README.md` con la descripcion del escenario, instrucciones y registro de IA.
 - Video de presentacion del equipo (pendiente de grabacion y carga).

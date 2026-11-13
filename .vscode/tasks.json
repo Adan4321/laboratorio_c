@@ -12,20 +12,41 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "detail": "Compila main.c, artemis.c y validaciones.c en un solo ejecutable."
+            "detail": "Linux/macOS: make | Windows: compilar.bat",
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/C",
+                    "compilar.bat"
+                ]
+            }
         },
         {
             "label": "Ejecutar simulador Artemis",
             "type": "shell",
             "command": "./simulador_artemis",
             "dependsOn": "Compilar simulador Artemis",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/C",
+                    "ejecutar.bat"
+                ]
+            }
         },
         {
             "label": "Limpiar compilacion",
             "type": "shell",
             "command": "make clean",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "windows": {
+                "command": "cmd",
+                "args": [
+                    "/C",
+                    "limpiar.bat"
+                ]
+            }
         }
     ]
 }

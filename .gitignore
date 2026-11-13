@@ -1,3 +1,5 @@
 *.o
+*.exe
 simulador_artemis
+simulador_artemis.exe
 main
