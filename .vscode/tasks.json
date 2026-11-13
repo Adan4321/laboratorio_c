@@ -4,7 +4,11 @@
         {
             "label": "Compilar simulador Artemis",
             "type": "shell",
-            "command": "make",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "compilar.bat"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -12,41 +16,28 @@
             "problemMatcher": [
                 "$gcc"
             ],
-            "detail": "Linux/macOS: make | Windows: compilar.bat",
-            "windows": {
-                "command": "cmd",
-                "args": [
-                    "/C",
-                    "compilar.bat"
-                ]
-            }
+            "detail": "Compila main.c, artemis.c y validaciones.c con MinGW."
         },
         {
             "label": "Ejecutar simulador Artemis",
             "type": "shell",
-            "command": "./simulador_artemis",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "ejecutar.bat"
+            ],
             "dependsOn": "Compilar simulador Artemis",
-            "problemMatcher": [],
-            "windows": {
-                "command": "cmd",
-                "args": [
-                    "/C",
-                    "ejecutar.bat"
-                ]
-            }
+            "problemMatcher": []
         },
         {
             "label": "Limpiar compilacion",
             "type": "shell",
-            "command": "make clean",
-            "problemMatcher": [],
-            "windows": {
-                "command": "cmd",
-                "args": [
-                    "/C",
-                    "limpiar.bat"
-                ]
-            }
+            "command": "cmd",
+            "args": [
+                "/C",
+                "limpiar.bat"
+            ],
+            "problemMatcher": []
         }
     ]
 }

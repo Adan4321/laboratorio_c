@@ -1,4 +1,4 @@
-# Simulador Artemis - Insercion y Estabilidad en Orbita Terrestre Baja (LEO)
+# Simulador Artemis - Insercion y Estabilidad en Orbita Terrestre Baja (LEO) - Windows
 
 Trabajo Practico Integrador Final de **Algoritmos y Estructuras de Datos**  
 Universidad Tecnologica Nacional - Facultad Regional Resistencia  
@@ -85,8 +85,7 @@ Para `h = 192 km` y `m = 33.000 kg`:
 | `artemis.c` | Fisica LEO, calculos, simulacion por turnos, reporte y bitacora |
 | `validaciones.h` | Prototipos de las funciones de entrada segura |
 | `validaciones.c` | Lectura validada de enteros, doubles y confirmaciones `s/n` |
-| `Makefile` | Compilacion multiplataforma (Linux/macOS/Windows) |
-| `compilar.bat` | Compilacion en Windows sin depender de `make` |
+| `compilar.bat` | Compilacion en Windows con MinGW |
 | `ejecutar.bat` | Ejecucion en Windows |
 | `limpiar.bat` | Limpieza de objetos y ejecutable en Windows |
 | `compilar_y_ejecutar.bat` | Compilacion y ejecucion en un solo paso en Windows |
@@ -109,81 +108,46 @@ flowchart TD
 - Las funciones reciben punteros (`Mision *`, `Resultado *`, `int *`) para modificar el estado original sin realizar copias.
 - Se utiliza el arreglo `Resultado resultados[MAX_RESULTADOS]` junto con el contador `n_resultados`.
 
-## 5. Compilacion y ejecucion
+## 5. Compilacion y ejecucion en Windows
 
 ### Requisitos
 
-- **Linux/macOS:** `gcc` y, opcionalmente, `make`.
-- **Windows:** MinGW-w64 con `gcc` agregado al `PATH`. `make` es opcional porque se incluyen scripts `.bat`.
+- Windows 10 u 11.
+- MinGW-w64 con `gcc` agregado al `PATH`.
 
-Verificar que el compilador este disponible:
+Verificar que el compilador este disponible en CMD o PowerShell:
 
-```bash
+```bat
 gcc --version
 ```
 
-### Linux / macOS
+### Opcion A: scripts incluidos (recomendada)
 
-Con Makefile:
-
-```bash
-make
-./simulador_artemis
-```
-
-Para compilar y ejecutar en un solo paso:
-
-```bash
-make run
-```
-
-Para limpiar los archivos generados:
-
-```bash
-make clean
-```
-
-Compilacion directa:
-
-```bash
-gcc -std=c11 -Wall -Wextra -Wpedantic main.c artemis.c validaciones.c -o simulador_artemis -lm
-./simulador_artemis
-```
-
-### Windows
-
-El codigo detecta Windows automaticamente y habilita la consola UTF-8. El Makefile tambien detecta Windows y genera `simulador_artemis.exe`.
-
-#### Opcion A: scripts incluidos (recomendada)
+Compilar:
 
 ```bat
 compilar.bat
+```
+
+Ejecutar:
+
+```bat
 ejecutar.bat
 ```
 
-Para compilar y ejecutar en un solo paso:
+Compilar y ejecutar en un solo paso:
 
 ```bat
 compilar_y_ejecutar.bat
 ```
 
-Para limpiar los archivos generados:
+Limpiar los archivos generados:
 
 ```bat
 limpiar.bat
 ```
 
-#### Opcion B: con Make para Windows
-
-Si tiene `mingw32-make` o `make` disponible:
-
-```bat
-mingw32-make
-mingw32-make run
-mingw32-make clean
-```
-
-#### Opcion C: compilacion directa con MinGW
+### Opcion B: compilacion directa con MinGW
 
 ```bat
 gcc -std=c11 -Wall -Wextra -Wpedantic main.c artemis.c validaciones.c -o simulador_artemis.exe -lm
@@ -192,17 +156,18 @@ simulador_artemis.exe
 
 ### Tarea de VS Code
 
-El archivo `.vscode/tasks.json` adapta las tareas segun el sistema operativo:
+El archivo `.vscode/tasks.json` ejecuta las tareas exclusivamente en Windows mediante `cmd`:
 
-- **Linux/macOS:** ejecuta `make`, `./simulador_artemis` y `make clean`.
-- **Windows:** ejecuta `compilar.bat`, `ejecutar.bat` y `limpiar.bat` mediante `cmd`.
+- **Compilar simulador Artemis:** `compilar.bat`.
+- **Ejecutar simulador Artemis:** `ejecutar.bat`.
+- **Limpiar compilacion:** `limpiar.bat`.
 
-### Portabilidad
+### Entorno Windows
 
-- El codigo fuente es C11 portable y no usa APIs exclusivas de un sistema operativo.
-- `windows.h` y `SetConsoleOutputCP(CP_UTF8)` se incluyen solo cuando se compila en Windows (`_WIN32`).
+- El programa habilita la consola UTF-8 con `SetConsoleOutputCP(CP_UTF8)`.
 - Las lecturas numericas aceptan coma o punto decimal sin depender del locale del sistema.
-- Los archivos `.bat` se entregan con terminaciones de linea CRLF para Windows.
+- Los archivos `.bat` se entregan con terminaciones de linea CRLF.
+- No se requiere `make`: la compilacion se realiza con los scripts `.bat` o directamente con `gcc`.
 
 ## 6. Menu del programa
 
@@ -241,14 +206,15 @@ El archivo `.vscode/tasks.json` adapta las tareas segun el sistema operativo:
 
 | Herramienta | Modelo | Tareas realizadas |
 |---|---|---|
-| opencode | `deepseek-v4.1-flash-free` | Analisis del repositorio, correccion de errores de compilacion, diseno modular, implementacion de la fisica del Problema 2, validaciones, reporte, Makefile, scripts de Windows y documentacion |
+| opencode | `deepseek-v4.1-flash-free` | Analisis del repositorio, correccion de errores de compilacion, diseno modular, implementacion de la fisica del Problema 2, validaciones, reporte, scripts de compilacion para Windows y documentacion |
 
 ### Prompts o consultas representativas
 
 1. "Vamos a trabajar con este repo https://github.com/Adan4321/laboratorio_c.git"
 2. "Verifica que cumple con los requisitos" (contrastando el proyecto con la consigna del TPI).
 3. "Ok ahora si, haz todo eso que dijimos" (implementacion de los modulos pendientes).
-4. "Dejalo full preparado para Windows" (Makefile condicional, scripts `.bat` y tareas de VS Code por sistema operativo).
+4. "Dejalo full preparado para Windows" (scripts `.bat` y tareas de VS Code).
+5. "Dejalo solo para Windows" (eliminacion de Makefile y de instrucciones para Linux/macOS).
 
 ### Como se valido y adapto el codigo generado
 
@@ -256,7 +222,7 @@ El archivo `.vscode/tasks.json` adapta las tareas segun el sistema operativo:
 - Se ejecutaron casos de prueba con entradas validas e invalidas: texto, valores fuera de rango, lineas vacias, entradas largas y confirmaciones incorrectas.
 - Se verificaron los resultados fisicos contra los valores de referencia del escenario (`h = 192 km`, `m = 33.000 kg`).
 - Se reviso que la arquitectura respete la separacion en modulos `.c` y `.h`.
-- El codigo se preparo para compilar en Linux y Windows, usando `windows.h` solo de forma condicional para la salida UTF-8 en Windows.
+- El proyecto se configuro exclusivamente para Windows, con MinGW-w64 y scripts `.bat` de compilacion y ejecucion.
 - No se utilizo IA para generar voces, avatares ni la participacion de los integrantes en el video.
 
 > Importante: todos los integrantes deben comprender y poder defender tecnicamente cada linea del codigo durante el coloquio.
@@ -264,6 +230,6 @@ El archivo `.vscode/tasks.json` adapta las tareas segun el sistema operativo:
 ## 9. Entregables
 
 - Codigo fuente modularizado: `main.c`, `artemis.c`, `artemis.h`, `validaciones.c`, `validaciones.h`.
-- `Makefile`, scripts `.bat` para Windows y tareas de compilacion de VS Code.
+- Scripts `.bat` para Windows y tareas de compilacion de VS Code.
 - `README.md` con la descripcion del escenario, instrucciones y registro de IA.
 - Video de presentacion del equipo (pendiente de grabacion y carga).
