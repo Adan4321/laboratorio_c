@@ -12,7 +12,7 @@ Ingenieria en Sistemas de Informacion
 |---|---|---|
 | Nombre 1 | Legajo 1 | usuario1 |
 | Nombre 2 | Legajo 2 | usuario2 |
-| Nombre 3 | Legajo 3 | usuario3 |
+| Collazo Raul | 28137 | RaulCollazo |
 | Nombre 4 | Legajo 4 | usuario4 |
 | Nombre 5 | Legajo 5 | usuario5 |
 
