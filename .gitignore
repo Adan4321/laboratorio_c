@@ -1,3 +1,4 @@
-*.o
+# Archivos binarios y de compilacion
 *.exe
-!simulador_artemis.exe
+*.o
+*.obj

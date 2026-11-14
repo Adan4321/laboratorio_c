@@ -2,42 +2,59 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compilar simulador Artemis",
             "type": "shell",
-            "command": "cmd",
+            "label": "Compilar Proyecto Artemis",
+            "command": "C:\\Strawberry\\c\\bin\\gcc.exe",
             "args": [
-                "/C",
-                "compilar.bat"
+                "-Wall",
+                "-Wextra",
+                "-g",
+                "${workspaceFolder}\\main.c",
+                "${workspaceFolder}\\proceso_calculo.c",
+                "${workspaceFolder}\\validaciones.c",
+                "-o",
+                "${workspaceFolder}\\artemis.exe",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
+            "detail": "Compila todos los archivos del proyecto Artemis."
+        },
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe compilar archivo activo",
+            "command": "C:\\Strawberry\\c\\bin\\gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-Wall",
+                "-Wextra",
+                "-g",
+                "${workspaceFolder}\\main.c",
+                "${workspaceFolder}\\proceso_calculo.c",
+                "${workspaceFolder}\\validaciones.c",
+                "-o",
+                "${workspaceFolder}\\artemis.exe",
+                "-lm"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "problemMatcher": [
                 "$gcc"
             ],
-            "detail": "Compila main.c, artemis.c y validaciones.c con MinGW."
-        },
-        {
-            "label": "Ejecutar simulador Artemis",
-            "type": "shell",
-            "command": "cmd",
-            "args": [
-                "/C",
-                "ejecutar.bat"
-            ],
-            "dependsOn": "Compilar simulador Artemis",
-            "problemMatcher": []
-        },
-        {
-            "label": "Limpiar compilacion",
-            "type": "shell",
-            "command": "cmd",
-            "args": [
-                "/C",
-                "limpiar.bat"
-            ],
-            "problemMatcher": []
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Tarea de compilación completa vinculada al botón Play de VS Code."
         }
     ]
 }

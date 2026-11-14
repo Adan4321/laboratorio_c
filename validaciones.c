@@ -1,174 +1,110 @@
-#include "validaciones.h"
-
-#include <ctype.h>
-#include <errno.h>
-#include <locale.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "validaciones.h"
 
-static int leer_linea(char *buffer, size_t tam) {
-    if (fgets(buffer, (int)tam, stdin) == NULL) {
-        return 0;
-    }
+// Limpia la terminal
+void limpiar_pantalla(void) {
+    system("cls");
+}
 
-    size_t largo = strlen(buffer);
-
-    if (largo > 0 && buffer[largo - 1] == '\n') {
-        buffer[largo - 1] = '\0';
-        return 1;
-    }
-
+// Pausa la ejecucion hasta presionar enter
+void pausar_pantalla(void) {
+    printf("\nPresione ENTER para continuar...");
     int c;
-    int sobra = 0;
-
     while ((c = getchar()) != '\n' && c != EOF) {
-        sobra = 1;
-    }
-
-    return sobra ? -1 : 1;
-}
-
-static void salir_por_eof(void) {
-    printf("\nEntrada finalizada. Cerrando el simulador.\n");
-    exit(EXIT_SUCCESS);
-}
-
-static void normalizar_separador_decimal(char *buffer) {
-    struct lconv *config = localeconv();
-    char separador = '.';
-
-    if (config != NULL && config->decimal_point != NULL && config->decimal_point[0] != '\0') {
-        separador = config->decimal_point[0];
-    }
-
-    for (char *p = buffer; *p != '\0'; p++) {
-        if (*p == '.' || *p == ',') {
-            *p = separador;
-        }
+        // vacia cualquier caracter que haya quedado
     }
 }
 
-double leer_double(const char *mensaje, double minimo, double maximo) {
-    char buffer[128];
-    char *fin;
-    double valor;
-
-    for (;;) {
-        printf("%s", mensaje);
-        fflush(stdout);
-
-        int estado = leer_linea(buffer, sizeof buffer);
-
-        if (estado == 0) {
-            salir_por_eof();
-        }
-
-        if (estado < 0) {
-            printf("Error: la entrada supera el largo permitido.\n");
-            continue;
-        }
-
-        normalizar_separador_decimal(buffer);
-
-        errno = 0;
-        valor = strtod(buffer, &fin);
-
-        while (isspace((unsigned char)*fin)) {
-            fin++;
-        }
-
-        if (fin == buffer || *fin != '\0' || errno == ERANGE || !isfinite(valor)) {
-            printf("Error: ingrese un numero valido.\n");
-            continue;
-        }
-
-        if (valor < minimo || valor > maximo) {
-            printf("Error: el valor debe estar entre %.4g y %.4g.\n", minimo, maximo);
-            continue;
-        }
-
-        return valor;
+// Limpia el buffer de entrada hasta el salto de linea
+void limpiar_linea(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        // descarta caracteres sobrantes
     }
 }
 
-int leer_entero(const char *mensaje, int minimo, int maximo) {
-    char buffer[128];
-    char *fin;
-    long valor;
-
-    for (;;) {
-        printf("%s", mensaje);
-        fflush(stdout);
-
-        int estado = leer_linea(buffer, sizeof buffer);
-
-        if (estado == 0) {
-            salir_por_eof();
+// Lee un entero y valida que este dentro del rango permitido
+int leer_entero(const char *msg, int min, int max) {
+    int n, r, c;
+    while (1) {
+        printf("%s", msg);
+        r = scanf("%d", &n);
+        if (r == EOF) {
+            exit(1);
         }
-
-        if (estado < 0) {
-            printf("Error: la entrada supera el largo permitido.\n");
-            continue;
+        if (r == 1) {
+            c = getchar();
+            if (c == '\n') {
+                if (n >= min && n <= max) {
+                    return n;
+                }
+                limpiar_pantalla();
+                printf("Error: Fuera de rango (%d a %d).\n\n", min, max);
+                continue;
+            }
+            if (c != EOF) {
+                limpiar_linea();
+            }
+        } else {
+            limpiar_linea();
         }
-
-        errno = 0;
-        valor = strtol(buffer, &fin, 10);
-
-        while (isspace((unsigned char)*fin)) {
-            fin++;
-        }
-
-        if (fin == buffer || *fin != '\0' || errno == ERANGE) {
-            printf("Error: ingrese un numero entero valido.\n");
-            continue;
-        }
-
-        if (valor < minimo || valor > maximo) {
-            printf("Error: el valor debe estar entre %d y %d.\n", minimo, maximo);
-            continue;
-        }
-
-        return (int)valor;
+        limpiar_pantalla();
+        printf("Error: Entrada invalida. Ingrese un numero entero.\n\n");
     }
 }
 
-int leer_confirmacion(const char *mensaje) {
-    char buffer[16];
-
-    for (;;) {
-        printf("%s (s/n): ", mensaje);
-        fflush(stdout);
-
-        int estado = leer_linea(buffer, sizeof buffer);
-
-        if (estado == 0) {
-            salir_por_eof();
-        }
-
-        if (estado < 0) {
-            printf("Error: la entrada supera el largo permitido.\n");
+// Lee un double, admite tanto punto como coma decimal y valida el rango
+double leer_double(const char *msg, double min, double max) {
+    char cad[64];
+    double x;
+    int r;
+    while (1) {
+        printf("%s", msg);
+        if (scanf("%63s", cad) != 1) {
+            limpiar_linea();
             continue;
         }
+        limpiar_linea();
 
-        if ((buffer[0] == 's' || buffer[0] == 'S') && buffer[1] == '\0') {
-            return 1;
+        // Si el usuario uso coma como separador decimal, la cambiamos a punto
+        for (int i = 0; cad[i] != '\0'; i++) {
+            if (cad[i] == ',') {
+                cad[i] = '.';
+            }
         }
 
-        if ((buffer[0] == 'n' || buffer[0] == 'N') && buffer[1] == '\0') {
-            return 0;
+        r = sscanf(cad, "%lf", &x);
+        if (r == 1) {
+            if (x >= min && x <= max) {
+                return x;
+            }
+            limpiar_pantalla();
+            printf("Error: Fuera de rango (%.2f a %.2f).\n\n", min, max);
+            continue;
         }
-
-        printf("Error: responda 's' o 'n'.\n");
+        limpiar_pantalla();
+        printf("Error: Entrada invalida. Ingrese un valor numerico.\n\n");
     }
 }
 
-void pausar(void) {
-    char buffer[16];
-
-    printf("\nPresione Enter para continuar...");
-    fflush(stdout);
-
-    (void)leer_linea(buffer, sizeof buffer);
+// Solicita confirmacion s/n para acciones importantes
+int leer_confirmacion(const char *msg) {
+    char resp;
+    while (1) {
+        printf("%s (s/n): ", msg);
+        if (scanf(" %c", &resp) == 1) {
+            limpiar_linea();
+            if (resp == 's' || resp == 'S') {
+                return 1;
+            }
+            if (resp == 'n' || resp == 'N') {
+                return 0;
+            }
+        } else {
+            limpiar_linea();
+        }
+        printf("Error: Ingrese 's' para si o 'n' para no.\n\n");
+    }
 }
