@@ -22,8 +22,8 @@ void mostrar_menu(void) {
 int main(void) {
     SetConsoleOutputCP(CP_UTF8);
 
-    maniobra *prim = NULL;
-    maniobra *ult = NULL;
+    maniobra* prim = NULL;
+    maniobra* ult = NULL;
     artemis nave;
     nave.radio_ini = R_ORB;
     nave.radio_act = R_ORB;
@@ -61,8 +61,7 @@ int main(void) {
                 printf("--- AVANZAR DURANTE UN LAPSO DE TIEMPO ---\n");
                 double segundos = leer_double("Segundos a avanzar (1 a 86400): ", 1, 86400);
                 double dist = Recorrido(nave.radio_act, segundos);
-                printf("\nSe avanzaron %.2f s. Vueltas: %.2f. Distancia: %.2f m\n",
-                       segundos, Cant_Vueltas(nave.radio_act, segundos), dist);
+                printf("\nSe avanzaron %.2f s. Vueltas: %.2f. Distancia: %.2f m\n", segundos, Cant_Vueltas(nave.radio_act, segundos), dist);
                 maniobra m = {0};
                 m.id = id_cant++;
                 m.tipo = TIPO_AVANCE;
@@ -104,18 +103,16 @@ int main(void) {
                 break;
             }
             case 4: {
-                double a, dt, v_lat, desvio, v_res, ang, exc;
+                double a, dt, v_lat, desvio, v_res, ang;
                 printf("--- PULSO LATERAL ---\n");
                 a  = leer_double("Aceleración del pulso en m/s^2 (0.1 a 5): ", 0.1, 5);
                 dt = leer_double("Duración del pulso en segundos (1 a 60): ", 1, 60);
-                Pulso_Lateral(nave.radio_act, a, dt, &v_lat, &desvio, &v_res, &ang, &exc);
+                Pulso_Lateral(nave.radio_act, a, dt, &v_lat, &desvio, &v_res, &ang);
                 printf("\nVelocidad orbital antes del pulso: %.2f m/s\n", Velocidad(nave.radio_act));
                 printf("Velocidad lateral (a*dt):          %.2f m/s\n", v_lat);
                 printf("Desviación lateral (a*dt^2/2):     %.2f m\n", desvio);
                 printf("Velocidad resultante:              %.2f m/s\n", v_res);
-                printf("Ángulo de desvío:                  %.6f rad (%.4f grados)\n",
-                       ang, ang * 180.0 / (DPI / 2));
-                printf("Excentricidad resultante:          %.4f\n", exc);
+                printf("Ángulo de desvío:                  %.6f rad (%.4f grados)\n", ang, ang * 180.0 / (DPI / 2));
                 printf("Velocidad de escape a este radio:  %.2f m/s\n", Velocidad_Escape(nave.radio_act));
                 printf("\nTrayectoria: ");
                 if (v_res >= Velocidad_Escape(nave.radio_act)) {

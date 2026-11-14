@@ -83,52 +83,28 @@ double Desplazamiento_Desacelerando(double Cambio_Orbital, double Tiempo, double
 }
 
 double Velocidad_Desacelerando(double Cambio_Orbital, double Tiempo, double t){
-    return Cambio_Orbital / (Tiempo / 2)
-           - Obtener_Aceleracion(Cambio_Orbital, Tiempo) * t;
+    return Cambio_Orbital / (Tiempo / 2) - Obtener_Aceleracion(Cambio_Orbital, Tiempo) * t;
 }
 
-// Simula la maniobra y llena los arreglos pos[] y vel[]
-int recalcular(double Cambio_Orbital, double Tiempo, double paso, double pos[], double vel[], int max){
-    int k;
-    int n = (int)ceil(Tiempo / paso);
-    double t, s;
-    if (n < 1) {
-        n = 1;
-    } else if (n > max - 1) {
-        n = max - 1; // no escribir fuera del arreglo
-    }
-    for (k = 0; k <= n; k++){
-        t = (k * Tiempo) / n;
-        if (t <= (Tiempo / 2.0)){
-            pos[k] = Desplazamiento_Acelerando(Cambio_Orbital, Tiempo, t);
-            vel[k] = Velocidad_Acelerando(Cambio_Orbital, Tiempo, t);
-        } else {
-            s = t - (Tiempo / 2.0);
-            pos[k] = Cambio_Orbital / 2.0 + Desplazamiento_Desacelerando(Cambio_Orbital, Tiempo, s);
-            vel[k] = Velocidad_Desacelerando(Cambio_Orbital, Tiempo, s);
-        }
-    }
-    return n + 1;
-}
+
 
 // Pulso lateral: aceleracion a constante perpendicular a la velocidad orbital
-void Pulso_Lateral(double R_ACT, double a, double dt, double *v_lat, double *desvio, double *v_res, double *ang, double *exc){
+void Pulso_Lateral(double R_ACT, double a, double dt, double* v_lat, double* desvio, double* v_res, double* ang){
     double v = Velocidad(R_ACT);
     *v_lat  = a * dt;
     *desvio = 0.5 * a * dt * dt;
     *v_res  = sqrt(v * v + (*v_lat) * (*v_lat));
     *ang    = atan(*v_lat / v);
-    *exc    = (*v_lat / v) * (*v_lat / v);
 }
 
 // Lista doble de maniobras, trayectoria y reportes
 
-const char *NOMBRES_TIPO[N_TIPOS] = {"Avance", "Cambio de orbita", "Pulso lateral"};
+const char* NOMBRES_TIPO[N_TIPOS] = {"Avance", "Cambio de orbita", "Pulso lateral"};
 
 // Lista doblemente enlazada
 
-void agregar_maniobra(maniobra **prim, maniobra **ult, maniobra datos) {
-    maniobra *Q = (maniobra *) malloc(sizeof(maniobra));
+void agregar_maniobra(maniobra** prim, maniobra** ult, maniobra datos) {
+    maniobra* Q = (maniobra*) malloc(sizeof(maniobra));
     if (Q == NULL) {
         printf("Error: Memoria Insuficiente\n");
         return;
@@ -146,10 +122,10 @@ void agregar_maniobra(maniobra **prim, maniobra **ult, maniobra datos) {
     }
 }
 
-void liberar_lista(maniobra **prim, maniobra **ult) {
-    maniobra *act = *prim;
+void liberar_lista(maniobra** prim, maniobra** ult) {
+    maniobra* act = *prim;
     while (act != NULL) {
-        maniobra *sig = act->prox; // guardar antes de liberar
+        maniobra* sig = act->prox; // guardar antes de liberar
         free(act);
         act = sig;
     }
@@ -159,37 +135,35 @@ void liberar_lista(maniobra **prim, maniobra **ult) {
 
 // Trayectoria (usa los arreglos pos[] y vel[])
 
-// Simula la maniobra, muestra unas 10 filas y devuelve la velocidad maxima (|v|)
+// Muestra la trayectoria basada en un arreglo estructurado de 10 puntos clave
 double mostrar_trayectoria(double Cambio_Orbital, double Tiempo) {
-    double pos[MAX_PASOS], vel[MAX_PASOS];
-    int n = recalcular(Cambio_Orbital, Tiempo, PASO_SIM, pos, vel, MAX_PASOS);
-    double v_max = 0.0;
-    int k, salto = (n - 1) / 10;
-    double t;
-    char fase[10];
-    if (salto < 1) {
-        salto = 1;
-    }
+    muestra_maniobra muestras[10];
+    int k;
+    double t, s;
 
-    for (k = 0; k < n; k++) {
-        if (fabs(vel[k]) > v_max) {
-            v_max = fabs(vel[k]);
+    // Velocidad maxima calculada analíticamente en el punto medio (t = Tiempo / 2)
+    double v_max = Obtener_Aceleracion(Cambio_Orbital, Tiempo) * (Tiempo / 2.0);
+
+    // Poblamos el arreglo estructurado con 10 muestras espaciadas
+    for (k = 1; k <= 10; k++) {
+        t = (k * Tiempo) / 10;
+        muestras[k-1].tiempo = t;
+        if (t <= (Tiempo / 2)) {
+            strcpy(muestras[k-1].fase, "Acel");
+            muestras[k-1].posicion = Desplazamiento_Acelerando(Cambio_Orbital, Tiempo, t);
+            muestras[k-1].velocidad = Velocidad_Acelerando(Cambio_Orbital, Tiempo, t);
+        } else {
+            strcpy(muestras[k-1].fase, "Frena");
+            s = t - (Tiempo / 2);
+            muestras[k-1].posicion = Cambio_Orbital / 2.0 + Desplazamiento_Desacelerando(Cambio_Orbital, Tiempo, s);
+            muestras[k-1].velocidad = Velocidad_Desacelerando(Cambio_Orbital, Tiempo, s);
         }
     }
-
     printf("\n  %-9s %-6s %-16s %-14s\n", "t (s)", "Fase", "Posicion (m)", "Veloc. (m/s)");
-    for (k = 0; k < n; k++) {
-        if (k % salto == 0 || k == n - 1) {
-            t = (k * Tiempo) / (n - 1);
-            if (t <= Tiempo / 2.0) {
-                strcpy(fase, "Acel");
-            } else {
-                strcpy(fase, "Frena");
-            }
-            printf("  %-9.1f %-6s %-16.2f %-14.2f\n", t, fase, pos[k], vel[k]);
-        }
+    for (k = 0; k < 10; k++) {
+        printf("  %-9.1f %-6s %-16.2f %-14.2f\n", muestras[k].tiempo, muestras[k].fase, muestras[k].posicion, muestras[k].velocidad);
     }
-    printf("  Control: posicion final simulada = %.2f m (pedido: %.2f m)\n", pos[n - 1], Cambio_Orbital);
+    printf("  Control: posicion final de muestras = %.2f m (pedido: %.2f m)\n", muestras[9].posicion, Cambio_Orbital);
     return v_max;
 }
 
@@ -200,13 +174,13 @@ void encabezado_tabla(void) {
     printf("---------------------------------------------------------------------------------------------\n");
 }
 
-void imprimir_fila(maniobra *p) {
+void imprimir_fila(maniobra* p) {
     printf("%-4d %-17s %-14.2f %-10.2f %-12.4f %-14.2f %-14.2f\n", p->id, NOMBRES_TIPO[p->tipo], p->desplazamiento, p->tiempo, p->aceleracion, p->v_orbital_final, p->radio_final);
 }
 
-void reporte_buscar(maniobra *prim, int total) {
+void reporte_buscar(maniobra* prim, int total) {
     int id_a_buscar = leer_entero("\nID de la maniobra a buscar: ", 1, total);
-    maniobra *act = prim;
+    maniobra* act = prim;
     while (act != NULL && act->id != id_a_buscar) {
         act = act->prox;
     }
@@ -232,9 +206,9 @@ void reporte_buscar(maniobra *prim, int total) {
     printf("-----------------------------------------\n");
 }
 
-void reporte_promedios(maniobra *prim, maniobra *ult, int total) {
+void reporte_promedios(maniobra* prim, maniobra* ult, int total) {
     int n = leer_entero("\nCuantas ultimas maniobras promediar? (0 = TODAS): ", 0, total);
-    maniobra *act;
+    maniobra* act;
     int cont = 0;
     double suma_despl = 0.0, suma_tiempo = 0.0;
     // Si pide 0 se promedian todas recorriendo desde el principio con prox
@@ -263,10 +237,10 @@ void reporte_promedios(maniobra *prim, maniobra *ult, int total) {
     }
 }
 
-void reporte_extremos(maniobra *prim, int total) {
+void reporte_extremos(maniobra* prim, int total) {
     int id_ini = leer_entero("\nID inicial del rango: ", 1, total);
     int id_fin = leer_entero("ID final del rango: ", id_ini, total);
-    maniobra *act = prim;
+    maniobra* act = prim;
     int cont = 0;
     int primer_nodo = 1;
     double max_v = 0.0, min_v = 0.0, max_acel = 0.0, max_despl = 0.0;
@@ -312,11 +286,11 @@ void reporte_extremos(maniobra *prim, int total) {
 }
 
 // Arreglos indexados por el tipo de maniobra: un acumulador por tipo
-void reporte_por_tipo(maniobra *prim) {
+void reporte_por_tipo(maniobra* prim) {
     int cantidad[N_TIPOS] = {0};
     double suma_tiempo[N_TIPOS] = {0};
     double max_v[N_TIPOS] = {0};
-    maniobra *act;
+    maniobra* act;
     int i, total = 0;
 
     for (act = prim; act != NULL; act = act->prox) {
@@ -338,8 +312,8 @@ void reporte_por_tipo(maniobra *prim) {
     printf("Total de maniobras realizadas: %d\n", total);
 }
 
-void menu_reporte(const artemis *nave, maniobra *prim, maniobra *ult, int total) {
-    maniobra *act;
+void menu_reporte(const artemis* nave, maniobra* prim, maniobra* ult, int total) {
+    maniobra* act;
     int sub_rep;
 
     if (prim == NULL) {

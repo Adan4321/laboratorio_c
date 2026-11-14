@@ -15,13 +15,9 @@
 #define TIEMPO_MIN       2.0   // tiempo minimo de maniobra en seg
 #define TIEMPO_MAX     600.0   // tiempo maximo de maniobra en seg
 
-// Arreglos de simulacion
-#define MAX_PASOS   1001       // tamano de los arreglos pos[] y vel[]
-#define PASO_SIM       1.0     // paso de simulacion en segundos
-
 // Tipos de maniobra para identificar cada nodo y arreglos
 enum { TIPO_AVANCE = 0, TIPO_ORBITA = 1, TIPO_PULSO = 2, N_TIPOS = 3 };
-extern const char *NOMBRES_TIPO[N_TIPOS];   // nombres para mostrar en pantalla
+extern const char* NOMBRES_TIPO[N_TIPOS];   // nombres para mostrar en pantalla
 
 // Estructuras principales
 typedef struct maniobra {
@@ -34,8 +30,8 @@ typedef struct maniobra {
     double v_orbital_final;
     double radio_final;
     double altura_final;
-    struct maniobra *prox;
-    struct maniobra *ant;
+    struct maniobra* prox;
+    struct maniobra* ant;
 } maniobra;
 
 typedef struct {
@@ -60,23 +56,28 @@ double Recorrido(double R_ACT, double Lapso);
 double Tiempo_Para_Recorrer(double R_ACT, double Angulo_Recorrer);
 double Cant_Vueltas(double R_ACT, double Lapso);
 
+// Estructura de muestra muestreada para la maniobra
+typedef struct {
+    double tiempo;
+    char fase[10];
+    double posicion;
+    double velocidad;
+} muestra_maniobra;
+
 // Maniobra de cambio de orbita
 double Obtener_Aceleracion(double Cambio_Orbital, double Tiempo);
 double Desplazamiento_Acelerando(double Cambio_Orbital, double Tiempo, double t);
 double Velocidad_Acelerando(double Cambio_Orbital, double Tiempo, double t);
 double Desplazamiento_Desacelerando(double Cambio_Orbital, double Tiempo, double t);
 double Velocidad_Desacelerando(double Cambio_Orbital, double Tiempo, double t);
-int recalcular(double Cambio_Orbital, double Tiempo, double paso,
-               double pos[], double vel[], int max);
 
 // Pulso lateral con retorno por punteros
-void Pulso_Lateral(double R_ACT, double a, double dt, double *v_lat,
-                   double *desvio, double *v_res, double *ang, double *exc);
+void Pulso_Lateral(double R_ACT, double a, double dt, double* v_lat, double* desvio, double* v_res, double* ang);
 
 // Manejo de la lista doble y reportes
-void agregar_maniobra(maniobra **prim, maniobra **ult, maniobra datos);
-void liberar_lista(maniobra **prim, maniobra **ult);
+void agregar_maniobra(maniobra** prim, maniobra** ult, maniobra datos);
+void liberar_lista(maniobra** prim, maniobra** ult);
 double mostrar_trayectoria(double Cambio_Orbital, double Tiempo);
-void menu_reporte(const artemis *nave, maniobra *prim, maniobra *ult, int total);
+void menu_reporte(const artemis* nave, maniobra* prim, maniobra* ult, int total);
 
 #endif

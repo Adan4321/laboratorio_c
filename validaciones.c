@@ -26,7 +26,7 @@ void limpiar_linea(void) {
 }
 
 // Lee un entero y valida que este dentro del rango permitido
-int leer_entero(const char *msg, int min, int max) {
+int leer_entero(const char* msg, int min, int max) {
     int n, r, c;
     while (1) {
         printf("%s", msg);
@@ -56,7 +56,7 @@ int leer_entero(const char *msg, int min, int max) {
 }
 
 // Lee un double, admite tanto punto como coma decimal y valida el rango
-double leer_double(const char *msg, double min, double max) {
+double leer_double(const char* msg, double min, double max) {
     char cad[64];
     double x;
     int r;
@@ -90,7 +90,7 @@ double leer_double(const char *msg, double min, double max) {
 }
 
 // Solicita confirmacion s/n para acciones importantes
-int leer_confirmacion(const char *msg) {
+int leer_confirmacion(const char* msg) {
     char resp;
     while (1) {
         printf("%s (s/n): ", msg);
