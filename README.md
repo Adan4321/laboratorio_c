@@ -16,7 +16,7 @@ Ingeniería en Sistemas de Información
 | Collazo, Raul | 28137 | RaulCollazo |
 | Echavarria, Ithan Xavier | 31108 | StephenWolfCode |
 
-**Comisión:** [K1.2 (4 integrantes) - K1.1 (1 integrante)]  
+**Comisión:** K1.2  
 **Repositorio:** (https://github.com/Adan4321/laboratorio_c)
 
 ---
@@ -178,13 +178,13 @@ typedef struct maniobra {
 * **Búsquedas y rangos:** Facilita filtrar subconjuntos de maniobras para calcular promedios, cotas máximas y mínimas sin desperdiciar memoria.
 * **Gestión de memoria:** Uso estricto de `malloc()` para cada nodo y función `liberar_lista()` para evitar fugas de memoria al terminar o reiniciar.
 
-Adicionalmente, se utilizan **arreglos discretizados** (`pos[MAX_PASOS]`, `vel[MAX_PASOS]`) dentro de `proceso_calculo.c` para emular paso a paso la cinemática de aceleración y frenado durante las maniobras de cambio de órbita.
+Adicionalmente, se utilizan arreglos (`pos[MAX_PASOS]`, `vel[MAX_PASOS]`) dentro de `proceso_calculo.c` para emular paso a paso la cinemática de aceleración y frenado durante las maniobras de cambio de órbita.
 
 ---
 
 ## 5. Compilación y Ejecución
 
-El proyecto está preparado para ejecutarse **con un solo botón** desde VS Code, mediante `make` o mediante comandos de terminal.
+El proyecto está preparado para ejecutarse mediante `make` o mediante comandos de terminal.
 
 ### Opción 1: Ejecución en VS CODE 
 
